@@ -34,10 +34,11 @@ async function main() {
 
   const app = express();
   const server = createServer(app);
-  const io = new Server(server, {
-    connectionStateRecovery: {},
-    adapter: createAdapter()
-  });
+ const io = new Server(server, {
+  connectionStateRecovery: {},
+  // only use the cluster adapter when actually running in cluster mode (i.e. locally, multiple workers)
+  ...(process.env.PORT ? {} : { adapter: createAdapter() })
+});
 
   app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'index.html'));
